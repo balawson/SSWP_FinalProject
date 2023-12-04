@@ -1,6 +1,6 @@
-﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
 
 namespace FinalProjectFront
@@ -14,14 +14,14 @@ namespace FinalProjectFront
             _httpClient = httpClient;
         }
 
-        public async Task<List<string>> StartGame()
+        public async Task<GameState> StartGame()
         {
             try
             {
                 var response = await _httpClient.PostAsync("/start-game", null);
                 response.EnsureSuccessStatusCode();
 
-                return await response.Content.ReadFromJsonAsync<List<string>>();
+                return await response.Content.ReadFromJsonAsync<GameState>();
             }
             catch (HttpRequestException)
             {
@@ -30,14 +30,14 @@ namespace FinalProjectFront
             }
         }
 
-        public async Task<List<string>> Hit()
+        public async Task<GameState> Hit()
         {
             try
             {
                 var response = await _httpClient.PostAsync("/hit", null);
                 response.EnsureSuccessStatusCode();
 
-                return await response.Content.ReadFromJsonAsync<List<string>>();
+                return await response.Content.ReadFromJsonAsync<GameState>();
             }
             catch (HttpRequestException)
             {
@@ -46,14 +46,14 @@ namespace FinalProjectFront
             }
         }
 
-        public async Task<List<string>> Stand()
+        public async Task<GameState> Stand()
         {
             try
             {
                 var response = await _httpClient.PostAsync("/stand", null);
                 response.EnsureSuccessStatusCode();
 
-                return await response.Content.ReadFromJsonAsync<List<string>>();
+                return await response.Content.ReadFromJsonAsync<GameState>();
             }
             catch (HttpRequestException)
             {
@@ -61,5 +61,12 @@ namespace FinalProjectFront
                 return null;
             }
         }
+    }
+
+    public class GameState
+    {
+        public List<string> UserCards { get; set; }
+        public List<string> DealerCards { get; set; }
+        public string GameMessage { get; set; }
     }
 }
