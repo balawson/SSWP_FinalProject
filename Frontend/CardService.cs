@@ -1,72 +1,80 @@
+using FinalProjectFront.Data;
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 
-namespace FinalProjectFront
+public class CardService
 {
-    public class CardService
+    private readonly HttpClient _httpClient;
+
+    public CardService(HttpClient httpClient)
     {
-        private readonly HttpClient _httpClient;
+        _httpClient = httpClient;
+        _httpClient.BaseAddress = new System.Uri("http://localhost:80");
+    }
 
-        public CardService(HttpClient httpClient)
+    public async Task<string> ShuffleDeck()
+    {
+        try
         {
-            _httpClient = httpClient;
+            var response = await _httpClient.PostAsync("/shuffle-deck/", null);
+            response.EnsureSuccessStatusCode();
+
+            var result = await response.Content.ReadAsStringAsync();
+            return result;
         }
-
-        public async Task<GameState> StartGame()
+        catch (HttpRequestException)
         {
-            try
-            {
-                var response = await _httpClient.PostAsync("/start-game", null);
-                response.EnsureSuccessStatusCode();
-
-                return await response.Content.ReadFromJsonAsync<GameState>();
-            }
-            catch (HttpRequestException)
-            {
-                // Handle exception (e.g., display an error message)
-                return null;
-            }
-        }
-
-        public async Task<GameState> Hit()
-        {
-            try
-            {
-                var response = await _httpClient.PostAsync("/hit", null);
-                response.EnsureSuccessStatusCode();
-
-                return await response.Content.ReadFromJsonAsync<GameState>();
-            }
-            catch (HttpRequestException)
-            {
-                // Handle exception (e.g., display an error message)
-                return null;
-            }
-        }
-
-        public async Task<GameState> Stand()
-        {
-            try
-            {
-                var response = await _httpClient.PostAsync("/stand", null);
-                response.EnsureSuccessStatusCode();
-
-                return await response.Content.ReadFromJsonAsync<GameState>();
-            }
-            catch (HttpRequestException)
-            {
-                // Handle exception (e.g., display an error message)
-                return null;
-            }
+            return null; // Handle exception as needed
         }
     }
 
-    public class GameState
+    public async Task<List<Card>> DealCards(int numberOfCards)
     {
-        public List<string> UserCards { get; set; }
-        public List<string> DealerCards { get; set; }
-        public string GameMessage { get; set; }
+        try
+        {
+            var cards = new List<Card>();
+
+            for (int i = 0; i < numberOfCards; i++)
+            {
+                var response = await _httpClient.GetFromJsonAsync<Card>("/deal-card/");
+                if (response != null)
+                {
+                    cards.Add(response);
+                }
+            }
+
+            return cards;
+        }
+        catch (HttpRequestException)
+        {
+            return null; // Handle exception as needed
+        }
+    }
+    private async Task<Card> DealCardFromApi()
+    {
+        var response = await _httpClient.GetFromJsonAsync<Card>("/deal-card/");
+        return new Card { Suit = response.Suit, Value = response.Value };
+    }
+
+
+    public async Task<string> ClearDeck()
+    {
+        try
+        {
+            var response = await _httpClient.PostAsync("/clear-deck/", null);
+            response.EnsureSuccessStatusCode();
+
+            var result = await response.Content.ReadAsStringAsync();
+            return result;
+        }
+        catch (HttpRequestException)
+        {
+            return null; // Handle exception as needed
+        }
     }
 }
+
+
