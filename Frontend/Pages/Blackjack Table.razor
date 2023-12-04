@@ -1,63 +1,47 @@
-﻿@page "/table"
+@page "/table"
+@inject CardService CardService
+@using FinalProjectFront.Data
 
-<h3>Blackjack Table</h3>
+<h3>Basic Strategy Trainer</h3>
 
-@if (!gameStarted)
-{
-    <button @onclick="StartGame">Start Game</button>
-}
-else
-{
-    <!-- Display Cards, Buttons, and Game Messages -->
-    <div>
-        <!-- Display User's Cards -->
-        <div>
-            User's Cards: @string.Join(", ", userCards)
-        </div>
+<br />
 
-        <!-- Display Dealer's Cards -->
-        <div>
-            Dealer's Cards: @string.Join(", ", dealerCards)
-        </div>
+<button @onclick="ShuffleDeck">Shuffle Deck</button>
+<button @onclick="DealCards">Deal Cards</button>
 
-        <!-- User Action Buttons -->
-        <div>
-            <button @onclick="Hit">Hit</button>
-            <button @onclick="Stand">Stand</button>
-            <!-- Add more buttons for other actions -->
-        </div>
+<br />
+<br />
 
-        <!-- Game Messages -->
-        <div>
-            @gameMessage
-        </div>
-    </div>
-}
+<div>
+    <p>Player's Cards: @string.Join(", ", playerCards.Select(card => card.ToString()))</p>
+    <p>Dealer's Visible Card: @string.Join(", ", dealerCards.Select(card => card.ToString()))</p>
+</div>
 
 @code {
-    private bool gameStarted = false;
-    private List<string> userCards = new List<string>();
-    private List<string> dealerCards = new List<string>();
-    private string gameMessage = "";
+    private List<Card> playerCards = new List<Card>();
+    private List<Card> dealerCards = new List<Card>();
 
-    private async Task StartGame()
+    private async Task ShuffleDeck()
     {
-        userCards = await CardService.StartGame();
-        gameStarted = true;
+        var shuffleResult = await CardService.ShuffleDeck();
+        Console.WriteLine($"Shuffle Result: {shuffleResult}");
     }
 
-    private async Task Hit()
+    private async Task DealCards()
     {
-        userCards = await CardService.Hit();
-        // Check for game outcomes and update gameMessage
-    }
+        playerCards.Clear();
+        dealerCards.Clear();
 
-    private async Task Stand()
-    {
-        dealerCards = await CardService.Stand();
-        // Check for game outcomes and update gameMessage
-        // Optionally, start a new round or end the game
+        for (int i = 0; i < 2; i++)
+        {
+            playerCards = await CardService.DealCards(2);
+      
+        }
+
+        for (int i = 0; i < 1; i++)
+        {
+            dealerCards = await CardService.DealCards(1);
+           
+        }
     }
-}
-}
 }
