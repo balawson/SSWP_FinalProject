@@ -3,7 +3,7 @@ from sqlalchemy import create_engine, Column, Integer, String
 from sqlalchemy.orm import declarative_base, sessionmaker, Session
 from typing import List, Optional
 
-SQLALCHEMY_DATABASE_URL = "sqlite:///C:/Users/blake/Cards.db"
+SQLALCHEMY_DATABASE_URL = "sqlite:///./Cards.db"
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
@@ -75,7 +75,7 @@ def deal_card(db: Session = Depends(get_db)):
         if card:
             db.delete(card)
             db.commit()
-            return {"card": {"suit": card.suit, "value": card.value}, "message": "Card dealt successfully"}
+            return {"id": card.id, "suit": card.suit, "value": card.value}
         else:
             # If no cards are left in the deck, trigger a shuffle and notify the start of a new shoe
             shuffle_deck(db)
