@@ -28,6 +28,11 @@ namespace FinalProjectFront
         {
             services.AddRazorPages();
             services.AddServerSideBlazor();
+            services.AddHttpClient("FastAPI", client =>
+            {
+                client.BaseAddress = new Uri("http://localhost:80");
+                // Configure other HttpClient options if needed
+            });
             services.AddScoped<CardService>();
         }
 
