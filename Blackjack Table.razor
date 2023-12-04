@@ -1,0 +1,63 @@
+﻿@page "/table"
+
+<h3>Blackjack Table</h3>
+
+@if (!gameStarted)
+{
+    <button @onclick="StartGame">Start Game</button>
+}
+else
+{
+    <!-- Display Cards, Buttons, and Game Messages -->
+    <div>
+        <!-- Display User's Cards -->
+        <div>
+            User's Cards: @string.Join(", ", userCards)
+        </div>
+
+        <!-- Display Dealer's Cards -->
+        <div>
+            Dealer's Cards: @string.Join(", ", dealerCards)
+        </div>
+
+        <!-- User Action Buttons -->
+        <div>
+            <button @onclick="Hit">Hit</button>
+            <button @onclick="Stand">Stand</button>
+            <!-- Add more buttons for other actions -->
+        </div>
+
+        <!-- Game Messages -->
+        <div>
+            @gameMessage
+        </div>
+    </div>
+}
+
+@code {
+    private bool gameStarted = false;
+    private List<string> userCards = new List<string>();
+    private List<string> dealerCards = new List<string>();
+    private string gameMessage = "";
+
+    private async Task StartGame()
+    {
+        userCards = await CardService.StartGame();
+        gameStarted = true;
+    }
+
+    private async Task Hit()
+    {
+        userCards = await CardService.Hit();
+        // Check for game outcomes and update gameMessage
+    }
+
+    private async Task Stand()
+    {
+        dealerCards = await CardService.Stand();
+        // Check for game outcomes and update gameMessage
+        // Optionally, start a new round or end the game
+    }
+}
+}
+}
